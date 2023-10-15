@@ -22,36 +22,40 @@ class Node:
     self.order = order
     self.num_children = num_children
     self.zombie = zombie
-  def show(self):
+  def show(self)->str:
+    '''Prints node information.'''
     parent_index = None if self.parent is None else self.parent.index
     left_child_index = None if self.left_child is None else self.left_child.index
     right_child_index = None if self.right_child is None else self.right_child.index
     print(f'node(index={self.index}, actor={self.actor}, parent_index={parent_index}, left_child_index={left_child_index}, right_child_index={right_child_index}, node_type={self.node_type}, order={self.order}, num_children={self.num_children})')
-  def is_leaf(self):
+  def is_leaf(self)->bool:
     '''Tests whether this is a leaf node.'''
     return (not self.zombie) & (self.left_child is None)
-  def is_root(self):
+  def is_root(self)->bool:
     '''Tests whether this is a root.'''
     return (not self.zombie) & (self.parent is None)
-  def is_internal(self):
+  def is_internal(self)->bool:
     '''Tests whether this is an internal node.'''
     return (not self.zombie) & (self.left_child is not None)
 
 class BinaryDecompositionTree:
+  '''A binary decomposition tree class with both internal and leaf nodes.'''
   def __init__(self):
-    # Initiate at an empty root.
     self.nodes = []
   def add_node(self, index:int=None, actor:int=None, node_type:str=None, order:str=None, parent:Node=None, left_child:Node=None, right_child:Node=None):
+    '''Adds a node to the binary decomposition tree (BDT).'''
     node = Node(index=index, actor=actor,node_type=node_type,order=order)
     node.parent=parent
     node.left_child=left_child
     node.right_child=right_child
     self.nodes.append(node)
-  def get_root(self):
+  def get_root(self)->Node:
+    '''Fetches the root in the BDT.'''
     return one([node for node in self.nodes if node.is_root()])
 
 
-def get_children_count(tree: BinaryDecompositionTree, node: Node=None):
+def get_children_count(tree: BinaryDecompositionTree, node: Node=None)->dict:
+  '''Calculates the children count on each tree-nodes under node given.'''
   if node is None:
     node = tree.get_root()
   if node.is_internal():
@@ -64,7 +68,15 @@ def get_children_count(tree: BinaryDecompositionTree, node: Node=None):
   return children_count
 
 def random_tree(actors:list, probability_sndoe:float=0.5)->BinaryDecompositionTree:
-  '''Builds a random BDT with actors and S-node probability.'''
+  '''Builds a random BDT with actors and S-node probability.
+  
+  Args: 
+    actors: The actors in leaf nodes.
+    probability_snode: The probability of obtaining an S-internal node.
+
+  Returns: 
+    A random binary decomposition tree.
+  '''
   num_actors = len(actors)
   
   tree = BinaryDecompositionTree()
