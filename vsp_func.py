@@ -1,3 +1,5 @@
+import numpy as np
+
 class Node:
   '''A node in class BinaryDecompositionTree.
 
