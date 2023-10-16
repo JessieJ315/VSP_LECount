@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 from more_itertools import one
+from math import comb
 
 class Node:
   '''A node in class BinaryDecompositionTree.
@@ -176,3 +177,27 @@ def tree2vsp(tree:BinaryDecompositionTree) -> np.ndarray:
   '''
   vsp = _tree2vsp(tree)
   return vsp.to_numpy()
+
+
+def nle_tree(tree:BinaryDecompositionTree, node:Node=None)->int:
+  '''Counts the linear extensions for a VSP represented by the binary decomposition tree.
+
+  Args:
+    tree: The binary decomposition tree representing a VSP. 
+    node: The node of interest. Default: None (root).
+
+  Returns:
+    The number of linear extensions of the VSP. 
+  '''
+  if node is None: 
+    node = tree.get_root()
+  if node.is_leaf():
+    return 1
+  
+  nle_left = nle_tree(tree, node.left_child)
+  nle_right = nle_tree(tree, node.right_child)
+  total = nle_left * nle_right
+  if node.node_type=='P':
+    total = total * comb(node.left_child.num_children + node.right_child.num_children, node.left_child.num_children)
+  
+  return total
