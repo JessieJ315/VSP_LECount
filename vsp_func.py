@@ -70,6 +70,7 @@ def get_children_count(tree: BinaryDecompositionTree, node: Node=None)->dict:
     children_count = {node.index: 1}
   return children_count
 
+
 def random_tree(actors:list, probability_sndoe:float=0.5)->BinaryDecompositionTree:
   '''Builds a random BDT with actors and S-node probability.
   
@@ -125,3 +126,52 @@ def random_tree(actors:list, probability_sndoe:float=0.5)->BinaryDecompositionTr
   for idx, count in children_count.items():
     tree.nodes[idx].num_children = count
   return tree
+
+
+def _tree2vsp(tree:vspfun.BinaryDecompositionTree, node:vspfun.Node=None)->pd.DataFrame:
+  '''Generates the adjacency matrix (transitive closure) for a VSP from a binary decomposition tree.'''
+  if node is None:
+    node = tree.get_root()
+  if node.is_leaf():
+    vsp = pd.DataFrame([0], index=[node.actor], columns=[node.actor])
+    return vsp
+
+  if not node.left_child.order=='-':
+    upper_vsp1 = _tree2vsp(tree, node.left_child)
+  else:
+    upper_vsp1 = _tree2vsp(tree, node.right_child)
+  if not node.right_child.order=='+':
+    lower_vsp2 = _tree2vsp(tree, node.right_child)
+  else:
+    lower_vsp2 = _tree2vsp(tree, node.left_child)
+
+  num_actors_upper = upper_vsp1.shape[0]
+  num_actors_lower = lower_vsp2.shape[0]
+  is_snode = int(node.node_type == 'S')
+  upper_vsp2 = pd.DataFrame(np.full((num_actors_upper,num_actors_lower),is_snode))
+  lower_vsp1 = upper_vsp2.transpose()*0
+  upper_vsp = pd.concat([upper_vsp1.reset_index(drop=True), upper_vsp2.reset_index(drop=True)], axis=1)
+  lower_vsp = pd.concat([lower_vsp1.reset_index(drop=True), lower_vsp2.reset_index(drop=True)], axis=1)
+  lower_vsp.columns = upper_vsp.columns
+  vsp = pd.concat([upper_vsp, lower_vsp], axis=0)
+
+  names = upper_vsp1.index.append(lower_vsp2.index)
+  vsp.columns = names
+  vsp.index = names
+  vsp = vsp.sort_index(axis=0)
+  vsp = vsp.sort_index(axis=1)
+
+  return vsp
+
+
+def tree2vsp(tree:vspfun.BinaryDecompositionTree) -> np.ndarray:
+  '''Generates the adjacency matrix (transitive closure) for a VSP from a binary decomposition tree.
+
+  Args:
+    tree: The binary decomposition tree.
+
+  Returns:
+    A transitively-closed adjacency matrix.
+  '''
+  vsp = _tree2vsp(tree)
+  return vsp.to_numpy()
