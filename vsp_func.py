@@ -128,7 +128,7 @@ def random_tree(actors:list, probability_sndoe:float=0.5)->BinaryDecompositionTr
   return tree
 
 
-def _tree2vsp(tree:vspfun.BinaryDecompositionTree, node:vspfun.Node=None)->pd.DataFrame:
+def _tree2vsp(tree: BinaryDecompositionTree, node: Node=None)->pd.DataFrame:
   '''Generates the adjacency matrix (transitive closure) for a VSP from a binary decomposition tree.'''
   if node is None:
     node = tree.get_root()
@@ -164,7 +164,7 @@ def _tree2vsp(tree:vspfun.BinaryDecompositionTree, node:vspfun.Node=None)->pd.Da
   return vsp
 
 
-def tree2vsp(tree:vspfun.BinaryDecompositionTree) -> np.ndarray:
+def tree2vsp(tree:BinaryDecompositionTree) -> np.ndarray:
   '''Generates the adjacency matrix (transitive closure) for a VSP from a binary decomposition tree.
 
   Args:
