@@ -59,13 +59,13 @@ class BinaryDecompositionTree:
     return one([node for node in self.nodes if node.is_root()])
 
 
-def get_children_count(tree: BinaryDecompositionTree, node: Node=None)->dict:
+def _get_children_count(tree: BinaryDecompositionTree, node: Node=None)->dict:
   '''Calculates the children count on each tree-nodes under node given.'''
   if node is None:
     node = tree.get_root()
   if node.is_internal():
-    left_children_count = get_children_count(tree, node.left_child)
-    right_children_count = get_children_count(tree, node.right_child)
+    left_children_count = _get_children_count(tree, node.left_child)
+    right_children_count = _get_children_count(tree, node.right_child)
     node_children_count = {node.index: left_children_count[node.left_child.index]+right_children_count[node.right_child.index]}
     children_count = {**node_children_count, **left_children_count, **right_children_count}
   else:
@@ -124,7 +124,7 @@ def random_tree(actors:list, probability_sndoe:float=0.5)->BinaryDecompositionTr
         node.left_child.order = '+' if left_child else '-'
         node.right_child.order = '-' if left_child else '+'
   # add children counts
-  children_count = get_children_count(tree)
+  children_count = _get_children_count(tree)
   for idx, count in children_count.items():
     tree.nodes[idx].num_children = count
   return tree
