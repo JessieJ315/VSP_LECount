@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import graphviz
 from more_itertools import one
 from math import comb
 
@@ -57,7 +58,34 @@ class BinaryDecompositionTree:
   def get_root(self)->Node:
     '''Fetches the root in the BDT.'''
     return one([node for node in self.nodes if node.is_root()])
-
+  def show(self, index:bool):
+    '''Visualises the binary decomposition tree.
+    Args: 
+      node_index: Whether to show the node index or the actor & node type. 
+    '''
+    dot = graphviz.Digraph()
+    root = self.get_root()
+    if node_index:
+      dot.node(str(root.index))
+    else:
+      root_key = str(root.node_type if root.is_internal() else root.actor)+str('' if root.order is None else root.order)
+      dot.node(str(root.index),label=root_key)
+    def _add_nodes_edges(node):
+      if node.is_internal():
+        if node_index:
+          dot.node(str(node.left_child.index))
+          dot.node(str(node.right_child.index))
+        else: 
+          key_left = str(node.left_child.node_type if node.left_child.is_internal() else node.left_child.actor)+str('' if node.left_child.order is None else node.left_child.order)
+          key_right = str(node.right_child.node_type if node.right_child.is_internal() else node.right_child.actor)+str('' if node.right_child.order is None else node.right_child.order)
+          dot.node(str(node.left_child.index),label=key_left)
+          dot.node(str(node.right_child.index),label=key_right)
+        dot.edge(str(node.index), str(node.left_child.index))
+        dot.edge(str(node.index), str(node.right_child.index))
+        _add_nodes_edges(node.left_child)
+        _add_nodes_edges(node.right_child)
+    _add_nodes_edges(root)
+    return(dot)
 
 def _get_children_count(tree: BinaryDecompositionTree, node: Node=None)->dict:
   '''Calculates the children count on each tree-nodes under node given.'''
