@@ -58,7 +58,7 @@ class BinaryDecompositionTree:
   def get_root(self)->Node:
     '''Fetches the root in the BDT.'''
     return one([node for node in self.nodes if node.is_root()])
-  def show(self, index:bool):
+  def show(self, node_index:bool):
     '''Visualises the binary decomposition tree.
     Args: 
       node_index: Whether to show the node index or the actor & node type. 
