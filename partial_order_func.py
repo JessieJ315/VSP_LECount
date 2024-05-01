@@ -55,9 +55,9 @@ def transitive_reduction(partial_order:np.ndarray)->np.ndarray:
   return partial_order_closure
 
 
+
 def depth(tr:np.ndarray)->int:
   '''Calculates the depth of a partial order.
-
   Args:
     tr: The transitive reduction representation of partial order. 
   
@@ -73,7 +73,7 @@ def depth(tr:np.ndarray)->int:
   col_sum_indicator = (col_sum==0)
   row_sum = tr.sum(axis=1)
   row_sum_indicator = (row_sum==0)
-  free_items = np.nonzero(row_sum_indicator & col_sum_indicator)[0]
+  free_items = one(np.nonzero(row_sum_indicator & col_sum_indicator))
   num_free_items = len(free_items)
   if num_free_items == num_items:
     return 1
@@ -84,8 +84,8 @@ def depth(tr:np.ndarray)->int:
     col_sum_indicator = (col_sum==0)
     row_sum = tr.sum(axis=1)
     row_sum_indicator = (row_sum==0)
-  tops = np.nonzero(col_sum_indicator)[0]
-  bottoms = np.nonzero(row_sum_indicator)[0]
+  tops = one(np.nonzero(col_sum_indicator))
+  bottoms = one(np.nonzero(row_sum_indicator))
   if len(bottoms)>len(tops):
     tops = bottoms
   tr = np.delete(tr,tops,0)
