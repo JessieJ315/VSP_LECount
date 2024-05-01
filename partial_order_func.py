@@ -1,4 +1,5 @@
 import numpy as np
+from more_itertools import one
 
 def random_dag(num_actors:int, edge_probability:float, dag:bool=True)->np.ndarray:
   '''generates a random DAG (Brightwell distribution).
