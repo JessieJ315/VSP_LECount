@@ -1,3 +1,4 @@
+import math
 import numpy as np
 from more_itertools import one
 
@@ -56,7 +57,6 @@ def transitive_reduction(partial_order:np.ndarray)->np.ndarray:
   return partial_order_closure
 
 
-
 def depth(tr:np.ndarray)->int:
   '''Calculates the depth of a partial order.
   Args:
@@ -92,3 +92,54 @@ def depth(tr:np.ndarray)->int:
   tr = np.delete(tr,tops,0)
   tr = np.delete(tr,tops,1)
   return 1 + depth(tr)
+
+
+def nle(tr:np.ndarray)->int:
+  '''Counts the number of linear extensions of a partial order. 
+
+  Args: 
+    tr: The transitive reduction representation of partial order. 
+
+  Returns: 
+    The number of linear extension of the partial order. 
+  '''
+  num_items = tr.shape[0]
+  if num_items==1:
+    return 1
+  col_sum = tr.sum(axis=0)
+  if col_sum.sum()==0:
+    return math.factorial(num_items)
+  col_sum_indicator = (col_sum==0)
+  row_sum = tr.sum(axis=1)
+  row_sum_indicator = (row_sum==0)
+  free_items = one(np.nonzero(row_sum_indicator & col_sum_indicator))
+  num_free_items = len(free_items)
+  if num_free_items == num_items:
+    return math.factorial(num_items)
+  if num_free_items > 0:
+    tr = np.delete(tr,free_items,0)
+    tr = np.delete(tr,free_items,1)
+    col_sum = tr.sum(axis=0)
+    col_sum_indicator = (col_sum==0)
+    row_sum = tr.sum(axis=1)
+    row_sum_indicator = (row_sum==0)
+    factor = math.factorial(num_items)/math.factorial(num_items-num_free_items)
+  else: 
+    factor = 1
+  if (num_items - num_free_items) == 2:
+    return factor
+  tops = one(np.nonzero(col_sum_indicator))
+  bottoms = one(np.nonzero(row_sum_indicator))
+  if ((len(tops)==1) & (len(bottoms)==1)):
+    used_items = np.concatenate((tops, bottoms))
+    tr_new = np.delete(tr,used_items,0)
+    tr_new = np.delete(tr_new,used_items,1)
+    return factor*nle(tr_new)
+  if len(bottoms)<len(tops):
+    tops = bottoms
+  count = 0
+  for item in tops:
+    trr = np.delete(tr,item,0)
+    trr = np.delete(trr,item,1)
+    count = count + nle(trr)
+  return factor*count
