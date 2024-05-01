@@ -108,14 +108,14 @@ def nle(tr:np.ndarray)->int:
     return 1
   col_sum = tr.sum(axis=0)
   if col_sum.sum()==0:
-    return math.factorial(num_items)
+    return int(math.factorial(num_items))
   col_sum_indicator = (col_sum==0)
   row_sum = tr.sum(axis=1)
   row_sum_indicator = (row_sum==0)
   free_items = one(np.nonzero(row_sum_indicator & col_sum_indicator))
   num_free_items = len(free_items)
   if num_free_items == num_items:
-    return math.factorial(num_items)
+    return int(math.factorial(num_items))
   if num_free_items > 0:
     tr = np.delete(tr,free_items,0)
     tr = np.delete(tr,free_items,1)
@@ -127,14 +127,14 @@ def nle(tr:np.ndarray)->int:
   else: 
     factor = 1
   if (num_items - num_free_items) == 2:
-    return factor
+    return int(factor)
   tops = one(np.nonzero(col_sum_indicator))
   bottoms = one(np.nonzero(row_sum_indicator))
   if ((len(tops)==1) & (len(bottoms)==1)):
     used_items = np.concatenate((tops, bottoms))
     tr_new = np.delete(tr,used_items,0)
     tr_new = np.delete(tr_new,used_items,1)
-    return factor*nle(tr_new)
+    return int(factor*nle(tr_new))
   if len(bottoms)<len(tops):
     tops = bottoms
   count = 0
