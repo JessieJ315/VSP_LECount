@@ -142,4 +142,4 @@ def nle(tr:np.ndarray)->int:
     trr = np.delete(tr,item,0)
     trr = np.delete(trr,item,1)
     count = count + nle(trr)
-  return factor*count
+  return int(factor*count)
