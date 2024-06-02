@@ -1,6 +1,8 @@
 import math
 import numpy as np
 from more_itertools import one
+import matplotlib.pyplot as plt
+import networkx as nx
 
 def random_dag(num_actors:int, edge_probability:float, dag:bool=True)->np.ndarray:
   '''generates a random DAG (Brightwell distribution).
@@ -21,6 +23,20 @@ def random_dag(num_actors:int, edge_probability:float, dag:bool=True)->np.ndarra
   else:
     np.fill_diagonal(binary_matrix,0)
     return binary_matrix
+
+
+def showDAG(adjacency_matrix:np.ndarray):
+  '''Display DAG given an adjacency matrix.
+  
+  Args: 
+    adjacency_matrix: The adjacency matrix of a DAG. 
+  '''
+  rows, cols = np.where(adjacency_matrix == 1)
+    edges = zip(rows.tolist(), cols.tolist())
+    gr = nx.Graph()
+    gr.add_edges_from(edges)
+    nx.draw(gr, node_size=500, with_labels=True)
+    plt.show()
 
 
 def _matrix_exp_iterativ(matrix:np.ndarray)->np.ndarray:
