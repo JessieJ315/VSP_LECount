@@ -32,11 +32,11 @@ def showDAG(adjacency_matrix:np.ndarray):
     adjacency_matrix: The adjacency matrix of a DAG. 
   '''
   rows, cols = np.where(adjacency_matrix == 1)
-    edges = zip(rows.tolist(), cols.tolist())
-    gr = nx.Graph()
-    gr.add_edges_from(edges)
-    nx.draw(gr, node_size=500, with_labels=True)
-    plt.show()
+  edges = zip(rows.tolist(), cols.tolist())
+  gr = nx.Graph()
+  gr.add_edges_from(edges)
+  nx.draw(gr, node_size=500, with_labels=True)
+  plt.show()
 
 
 def _matrix_exp_iterativ(matrix:np.ndarray)->np.ndarray:
